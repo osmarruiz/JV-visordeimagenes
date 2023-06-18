@@ -4,15 +4,19 @@
  */
 package visordeimagenes;
 
+
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.ArrayList;
-import javax.swing.GrayFilter;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 
 /**
  *
@@ -31,6 +35,7 @@ public class VisorJFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        buttonGroup1 = new javax.swing.ButtonGroup();
         desplazamiento = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
@@ -54,6 +59,11 @@ public class VisorJFrame extends javax.swing.JFrame {
         jCheckBox2 = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                formMouseReleased(evt);
+            }
+        });
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowOpened(java.awt.event.WindowEvent evt) {
                 formWindowOpened(evt);
@@ -216,6 +226,7 @@ public class VisorJFrame extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Vision", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 12))); // NOI18N
 
+        buttonGroup1.add(jRadioButton1);
         jRadioButton1.setEnabled(false);
         jRadioButton1.setLabel("Color");
         jRadioButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -224,6 +235,7 @@ public class VisorJFrame extends javax.swing.JFrame {
             }
         });
 
+        buttonGroup1.add(jRadioButton2);
         jRadioButton2.setEnabled(false);
         jRadioButton2.setLabel("Gris");
         jRadioButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -274,8 +286,13 @@ public class VisorJFrame extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 408, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
                 .addGap(40, 40, 40)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 384, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(desplazamiento, javax.swing.GroupLayout.PREFERRED_SIZE, 384, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addGroup(layout.createSequentialGroup()
@@ -288,12 +305,6 @@ public class VisorJFrame extends javax.swing.JFrame {
                                     .addGap(0, 0, Short.MAX_VALUE))))
                         .addComponent(seleccione, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(36, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -346,9 +357,9 @@ public class VisorJFrame extends javax.swing.JFrame {
                 foto.setNombre(jTextField2.getText());
                 foto.setDescripcion(jTextField1.getText());
                 Fotos.add(foto);
-                 inicial();
+                inicial();
+                arrayNotNull();
                 mostrarimagen(Fotos.size() - 1);
-                //punto inicial de la aplicacion
                 JOptionPane.showMessageDialog(this, "Se ha guardado la imagen");
             } else {
                 JOptionPane.showMessageDialog(this, "No se encontro esa imagen");
@@ -363,36 +374,47 @@ public class VisorJFrame extends javax.swing.JFrame {
         CFoto Foto = Fotos.get(coun);
         URL url = this.getClass().getResource("/visordeimagenes/images/" + Foto.getNombre());
         jLabel4.setIcon(new ImageIcon(url));
-        arrayNotNull();
-        //stretch image convierte la imagen al tamaño del label
         Icon i = jLabel4.getIcon();
         ImageIcon icon = (ImageIcon) i;
         Image image = icon.getImage().getScaledInstance(jLabel4.getWidth(), jLabel4.getHeight(), Image.SCALE_SMOOTH);
         jLabel4.setIcon(new ImageIcon(image));
-        
+        //stretch image convierte la imagen al tamaño del label
+        if(jRadioButton2.isSelected()){
+           Image imagenGrises = convertirImagenAGrises(image);
+           jLabel4.setIcon(new ImageIcon(imagenGrises));
+        }
         
         //nombre de la foto mostrada
-        jLabel2.setText(Foto.getNombre());
+        jCheckBox1ActionPerformed(null);
         count = coun;
     }
-    private void imagengris(int coun){
-        CFoto Foto = Fotos.get(coun);
-        URL url = this.getClass().getResource("/visordeimagenes/images/" + Foto.getNombre());
-        jLabel4.setIcon(new ImageIcon(url));
-        
-        //stretch image convierte la imagen al tamaño del label
-        Icon i = jLabel4.getIcon();
-        ImageIcon icon = (ImageIcon) i;
-        Image image = icon.getImage().getScaledInstance(jLabel4.getWidth(), jLabel4.getHeight(), Image.SCALE_SMOOTH);
-        
-        Image grayImage = GrayFilter.createDisabledImage(image);
-        jLabel4.setIcon(new ImageIcon(grayImage));
-        
-    
-        
-        //nombre de la foto mostrada
-        jLabel2.setText(Foto.getNombre());
-        count = coun;
+    private Image convertirImagenAGrises(Image image) {
+        try {
+            BufferedImage imagenColor = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_RGB);
+            Graphics2D g = imagenColor.createGraphics();
+            g.drawImage(image, 0, 0, null);
+            g.dispose();
+
+            BufferedImage imagenGrises = new BufferedImage(imagenColor.getWidth(), imagenColor.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+
+            for (int y = 0; y < imagenColor.getHeight(); y++) {
+                for (int x = 0; x < imagenColor.getWidth(); x++) {
+                    int rgb = imagenColor.getRGB(x, y);
+                    int r = (rgb >> 16) & 0xFF;
+                    int gr = (rgb >> 8) & 0xFF;
+                    int b = rgb & 0xFF;
+
+                    int luminancia = (int) (0.2126 * r + 0.7152 * gr + 0.0722 * b);
+                    int gris = (luminancia << 16) | (luminancia << 8) | luminancia;
+
+                    imagenGrises.setRGB(x, y, gris);
+                }
+            }
+
+            return imagenGrises;
+        } catch (Exception e) {
+                return null;
+            }
     }
     
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
@@ -414,6 +436,15 @@ public class VisorJFrame extends javax.swing.JFrame {
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
         //click cancelar boton
         inicial();
+        if (!Fotos.isEmpty()) {
+            
+            jCheckBox1.setEnabled(true);
+            jCheckBox2.setEnabled(true);
+            jButton7.setEnabled(true);
+            if(jCheckBox2.isSelected()){
+                jCheckBox2ActionPerformed(null);
+            }
+        }
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jTextField2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextField2MouseClicked
@@ -534,14 +565,47 @@ public class VisorJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jCheckBox2ActionPerformed
 
     private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton1ActionPerformed
-        jRadioButton2.setSelected(false);
+        
         mostrarimagen(count);
     }//GEN-LAST:event_jRadioButton1ActionPerformed
 
     private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
-        jRadioButton1.setSelected(false);
-        imagengris(count);
+
+        mostrarimagen(count);
     }//GEN-LAST:event_jRadioButton2ActionPerformed
+
+    private void formMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseReleased
+        if (evt.isPopupTrigger()) {
+        JPopupMenu popupMenu = new JPopupMenu();
+        JMenuItem menuItem1 = new JMenuItem("Nuevo");
+        JMenuItem menuItem3 = new JMenuItem("primero");
+        JMenuItem menuItem4 = new JMenuItem("anterior");
+        JMenuItem menuItem5 = new JMenuItem("siguiente");
+        JMenuItem menuItem6 = new JMenuItem("ultimo");
+        popupMenu.add(menuItem1);
+        popupMenu.add(menuItem3);
+        popupMenu.add(menuItem4);
+        popupMenu.add(menuItem5);
+        popupMenu.add(menuItem6);
+        popupMenu.show(evt.getComponent(), evt.getX(), evt.getY());
+        
+        menuItem1.addActionListener((e) -> {
+            jButton5ActionPerformed(e);
+        });
+        menuItem3.addActionListener((e) -> {
+            jButton1ActionPerformed(e);
+        });
+        menuItem4.addActionListener((e) -> {
+            jButton2ActionPerformed(e);
+        });
+        menuItem5.addActionListener((e) -> {
+            jButton3ActionPerformed(e);
+        });
+        menuItem6.addActionListener((e) -> {
+            jButton4ActionPerformed(e);
+        });
+    }
+    }//GEN-LAST:event_formMouseReleased
 
     private void inicial() {
         jButton5.setEnabled(true);
@@ -553,9 +617,7 @@ public class VisorJFrame extends javax.swing.JFrame {
         jButton8.setEnabled(false);
         desplaenabled(true);
         //si el arreglo no esta vacio se activa la opcion borrar
-        arrayNotNull();
-        
-        
+       
 
     }
     private void arrayNotNull() {
@@ -564,7 +626,6 @@ public class VisorJFrame extends javax.swing.JFrame {
             jButton7.setEnabled(true);
             jCheckBox1.setEnabled(true);
             jCheckBox2.setEnabled(true);
-            jButton7.setEnabled(true);
             jRadioButton1.setSelected(true);
            }
             else{
@@ -606,6 +667,7 @@ public class VisorJFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JPanel desplazamiento;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
